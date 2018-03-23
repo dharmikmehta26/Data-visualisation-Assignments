@@ -1,0 +1,96 @@
+---
+title: "text mining on narendra modi dataset"
+author: "dharmik"
+date: "9 November 2017"
+output: html_document
+---
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(plotly)
+nm_tweet_data <- read.csv("narendramodi_tweets.csv")
+
+x <- "Honourable President, Respected Vice President, Madam Speaker of Lok Sabha, our Former Prime Minister Shri Devegowdaji, Members of the Council of Ministers, all the other members of the House, and the esteemed conglomerate gathered here representing diverse sectors."
+
+a <- strsplit(x," ")
+
+class(a)
+a <- unlist(a)
+table(a)
+
+
+
+```
+
+
+TEXT MINING AND WORD CLOUD on sample text file
+```{r}
+library(stringi)
+library(stringr)
+
+speech_file <- 'D:/data science term sylabus/2nd term/Data Visulization/4th day/speech.txt'
+speech_article <- readChar(speech_file,file.info(speech_file)$size)
+#reading text file 
+
+
+words_all=unlist(strsplit(speech_article,' '))
+length(words_all)
+#splitting charachter of articles
+
+
+words_freq <- as.data.frame(table(words_all))
+#convverting into data frame
+
+words_freq=words_freq %>% arrange(-Freq)
+# arranging in descending order
+
+
+View(words_freq)
+
+library(tm)
+library(SnowballC)
+library(wordcloud)
+
+common_stop_words <- stopwords()
+#list of inbuild stopwords
+length(common_stop_words)
+
+#wordcloud(words_freq$words_all,words_freq$Freq,colors = words_freq$Freq)
+
+words_top <- words_freq %>% filter(!words_all %in% common_stop_words) %>% arrange(-Freq) %>% head(50)
+#remove all stop words 
+
+wordcloud(words_top$words_all,words_top$Freq,colors = c("violet","green","blue"))
+#creating wordcloud
+```
+
+wordcloud and text mining on tweeter dataset
+```{r}
+nm_tweet_data <- read.csv("narendramodi_tweets.csv")
+
+nm_tweet_data$text <- as.character(nm_tweet_data$text)
+
+nm_tweet_data$text <- tolower(nm_tweet_data$text)
+
+nm_tweet_data$text <- gsub('[^a-z] ', '',nm_tweet_data$text)
+
+words <- unlist(str_split(nm_tweet_data$text,' '))
+
+
+words_freq <- as.data.frame(table(words))
+names(words_freq)
+
+words_top <- words_freq %>% filter(!words_freq$words %in% common_stop_words) %>% arrange(-Freq) %>% head(50)
+
+
+library(RColorBrewer)
+pal2 <- brewer.pal(8,"Dark2")
+
+wordcloud(words_top$words,words_top$Freq,colors = pal2)
+
+
+```
+
